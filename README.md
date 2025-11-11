@@ -3,16 +3,16 @@
 # Reproducible R Project Template
 
 This template is designed to streamline the setup of reproducible R projects, particularly for data analysis and research purposes.
-It leverages the power of Docker, Quarto, and other tools to create a consistent and portable development environment, making it easier for teams to collaborate and for individuals to replicate results.
-The Dockerfiles used in this template can be found at <https://github.com/mattocci27/r-containers>.
+It leverages the power of Podman, Quarto, and other tools to create a consistent and portable development environment, making it easier for teams to collaborate and for individuals to replicate results.
+The container images used in this template can be found at <https://github.com/mattocci27/r-containers>.
 
-*Note: This README was written with the assistance of ChatGPT-4.*
+*Note: This README was written with the assistance of ChatGPT.*
 
 
 ## Features
 
-- **Docker**:
-Consistent and portable environments.
+- **Podman**:
+Rootless, Docker-compatible container runtime for local and remote work.
 
 - **Quarto**:
 Dynamic and reproducible reports.
@@ -42,9 +42,9 @@ Robust, maintainable, and scalable workflows.
     ./setup.sh
     ```
     The `setup.sh` script automates the configuration of the development environment for the R project.
-    It sets up Docker containers, updates environment settings for renv, and builds an Apptainer image if applicable, ensuring a consistent and reproducible development setup.
+    It prepares the Podman-backed VSCode dev container, updates environment settings for renv, links the appropriate devcontainer JSON for your host, fixes macOS permissions when needed, and builds an Apptainer image if applicable. Running it once per machine keeps the environment consistent and reproducible.
 
-3. **Start VSCode Dev Container**: Open the project in Visual Studio Code and start the development container.
+3. **Start VSCode Dev Container**: Open the project in Visual Studio Code and start the development container. The dev container definition assumes the Podman engine (or Podman Desktop) is available to the VSCode Dev Containers / Remote Containers extension.
 
 4. **Run the Project**:
     ```bash
@@ -55,19 +55,11 @@ Robust, maintainable, and scalable workflows.
 
 Before setting up the development environment, ensure that the following prerequisites are met:
 
-### Docker Configuration
+### Podman Configuration
 
-To avoid permission issues with the Docker container, it's essential to configure Docker to use the same user ID (UID) and group ID (GID) as your host user.
-This ensures that files created within the container have the correct permissions on the host system.
-Add the following lines to your `.bashrc` or `.zshrc` file:
+Install Podman (or Podman Desktop) and ensure VSCode is configured to use it for Dev Containers. On macOS you can install via Homebrew (`brew install podman podman-desktop`) and start the Podman machine with `podman machine init && podman machine start`.
 
-```bash
-export HOST_UID=$(id -u)
-export HOST_GID=$(id -g)
-```
-
-These commands set environment variables `HOST_UID` and `HOST_GID` to your user's UID and GID, respectively.
-These variables can then be used in the Docker configuration to set the container's user permissions.
+When VSCode prompts for the container runtime, choose Podman.
 
 ### Renv Configuration
 
@@ -89,6 +81,30 @@ Follow the [SSH Setup Instructions](./templates/ssh_setup.md) to configure SSH k
 
 By following these prerequisites, you'll ensure that the development environment is set up correctly and securely, with proper permissions and access to necessary tools and services.
 
+### `.Renviron` and `GITHUB_PAT`
+
+The `.Renviron` file at the project root is committed so shared environment defaults are available. It currently defines:
+
+```bash
+#renv settings
+RENV_PATHS_PREFIX_AUTO=TRUE
+RENV_CONFIG_PAK_ENABLED=TRUE
+OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
+GITHUB_PAT=github_pat_XXXXXXXXXXXXXXXXXXXXXXXX
+```
+
+- `RENV_PATHS_PREFIX_AUTO=TRUE` keeps per-project libraries inside the repo even when a shared cache is mounted, which prevents cross-project contamination.  
+- `RENV_CONFIG_PAK_ENABLED=TRUE` tells `renv` to use `pak` for faster installs and downloads.  
+- `OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES` avoids macOS fork protections that can break GUI-linked R packages launched from VS Code.
+
+Replace the placeholder `github_pat_...` value with your own [GitHub personal access token](https://github.com/settings/tokens) that has at least `read:packages` scope. Packages such as `pak` use this token to authenticate against GitHub's API and to stay within higher rate limits. Keep the token scoped narrowly and rotate it if it leaks.
+
+## Utility Scripts
+
+- `scripts/fixperms.sh`: macOS tends to mark new files as user-only, which causes permission conflicts when the Podman container runs as a group-shared user. Run `scripts/fixperms.sh /path/to/project` to recursively switch ownership to the `staff` group (gid 20) and grant group write access. `setup.sh` runs this automatically on macOS, but you can rerun it any time bind-mounted folders become read-only.
+
+- `scripts/select-devcontainer.sh`: swaps `.devcontainer/devcontainer.json` between the macOS-optimized and Linux-optimized definitions. On macOS it symlinks to `devcontainer_mac.json`; otherwise it points to `devcontainer_linux.json`. `setup.sh` invokes this so VSCode always loads the right configuration, but you can run it manually if you move the repo between hosts.
+
 ## Project Structure
 
 - `./_targets`: Metadata for the `targets` package.
@@ -106,4 +122,4 @@ By following these prerequisites, you'll ensure that the development environment
 - `./scripts`: Setup scripts for the development environment.
 - `./setup.sh`: Environment setup script.
 - `./stan`: Stan model files.
-- `./templates`: Template files for devcontainer, Docker Compose, and SSH setup.
+- `./templates`: Template files for devcontainer, container orchestrations, and SSH setup.
