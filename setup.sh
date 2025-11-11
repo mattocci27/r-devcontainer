@@ -20,7 +20,7 @@ sif_file="$REPO_ROOT/apptainer.sif"
 # Check conditions and build apptainer.sif from apptainer.def if applicable
 if [ ! -f "/.dockerenv" ] && [ ! -f "$sif_file" ] && which apptainer > /dev/null; then
     echo "Building apptainer.sif from apptainer.def..."
-    sudo apptainer build "$sif_file" "$REPO_ROOT/apptainer.def"
+    apptainer build "$sif_file" "$REPO_ROOT/apptainer.def"
 else
     echo "Conditions not met for building apptainer.sif."
 fi

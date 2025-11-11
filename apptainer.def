@@ -1,5 +1,5 @@
 BootStrap: docker
-From: mattocci/cmdstan-verse:4.4.1
+From: mattocci/cmdstan-ai:4.5.2
 
 %apprun R
   exec R "${@}"
