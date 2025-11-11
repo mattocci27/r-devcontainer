@@ -88,3 +88,4 @@ rsconnect/
 # but it's better to ignore for the acutal usage
 # !ms/manuscript.pdf
 
+.devcontainer/devcontainer.json

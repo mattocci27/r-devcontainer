@@ -27,14 +27,14 @@ options(renv.config.repos.override = getOption("repos"))
 
 # Docker-specific settings
 if (Sys.getenv("INSIDE_DOCKER") == "true") {
-  Sys.setenv(RENV_PATHS_CACHE = "/renv")
+  Sys.setenv(RENV_PATHS_CACHE = "/home/rstudio/renv")
 }
 
 # General settings for any container environment
 if (Sys.getenv("INSIDE_CONTAINER") == "true") {
   .libPaths(new = c(.libPaths(),
-                    "/home/rstudio/vscode-R/renv/library/linux-ubuntu-noble/R-4.4/x86_64-pc-linux-gnu/",
-                    "/home/rstudio/vscode-R/renv/library/linux-ubuntu-noble/R-4.4/aarch64-unknown-linux-gnu/"))
+                    "/home/rstudio/vscode-R/renv/library/linux-ubuntu-noble/R-4.5/x86_64-pc-linux-gnu/",
+                    "/home/rstudio/vscode-R/renv/library/linux-ubuntu-noble/R-4.5/aarch64-unknown-linux-gnu/"))
   cmdstan_path <- Sys.getenv("CMDSTAN_PATH", unset = NA)
   if (!is.na(cmdstan_path)) {
     cmdstanr::set_cmdstan_path(cmdstan_path)
