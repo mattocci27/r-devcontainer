@@ -22,7 +22,7 @@
   ],
 
   "mounts": [
-    "source=${env:HOME}/renv,target=/home/rstudio/renv,type=bind,consistency=cached"
+    "source=${env:HOME}/renv,target=/home/rstudio/renv-cache,type=bind,consistency=cached"
   ],
 
 	"customizations": {
