@@ -50,5 +50,4 @@ if (Sys.getenv("INSIDE_CONTAINER") == "true") {
   .libPaths(new = c(.libPaths(),
                     "/home/rstudio/vscode-R/renv/library/linux-ubuntu-noble/R-4.5/x86_64-pc-linux-gnu/",
                     "/home/rstudio/vscode-R/renv/library/linux-ubuntu-noble/R-4.5/aarch64-unknown-linux-gnu/"))
-  }
 }
