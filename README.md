@@ -3,7 +3,7 @@
 # Reproducible R Project Template
 
 This template is designed to streamline the setup of reproducible R projects, particularly for data analysis and research purposes.
-It leverages the power of Podman, Quarto, and other tools to create a consistent and portable development environment, making it easier for teams to collaborate and for individuals to replicate results.
+It leverages the power of Docker, Quarto, and other tools to create a consistent and portable development environment, making it easier for teams to collaborate and for individuals to replicate results.
 The container images used in this template can be found at <https://github.com/mattocci27/r-containers>.
 
 *Note: This README was written with the assistance of ChatGPT.*
@@ -11,8 +11,8 @@ The container images used in this template can be found at <https://github.com/m
 
 ## Features
 
-- **Podman**:
-Rootless, Docker-compatible container runtime for local and remote work.
+- **Docker**:
+Widely supported container runtime for local and remote work.
 
 - **Quarto**:
 Dynamic and reproducible reports.
@@ -42,9 +42,9 @@ Robust, maintainable, and scalable workflows.
     ./setup.sh
     ```
     The `setup.sh` script automates the configuration of the development environment for the R project.
-    It prepares the Podman-backed VSCode dev container, updates environment settings for renv, links the appropriate devcontainer JSON for your host, fixes macOS permissions when needed, and builds an Apptainer image if applicable. Running it once per machine keeps the environment consistent and reproducible.
+    It prepares the Docker-backed VSCode dev container, updates environment settings for renv, links the appropriate devcontainer JSON for your host, fixes macOS permissions when needed, and builds an Apptainer image if applicable. Running it once per machine keeps the environment consistent and reproducible.
 
-3. **Start VSCode Dev Container**: Open the project in Visual Studio Code and start the development container. The dev container definition assumes the Podman engine (or Podman Desktop) is available to the VSCode Dev Containers / Remote Containers extension.
+3. **Start VSCode Dev Container**: Open the project in Visual Studio Code and start the development container. The dev container definition assumes Docker Engine (Linux) or Docker Desktop (macOS/Windows) is available to the VSCode Dev Containers / Remote Containers extension.
 
 4. **Run the Project**:
     ```bash
@@ -55,11 +55,9 @@ Robust, maintainable, and scalable workflows.
 
 Before setting up the development environment, ensure that the following prerequisites are met:
 
-### Podman Configuration
+### Docker Configuration
 
-Install Podman (or Podman Desktop) and ensure VSCode is configured to use it for Dev Containers. On macOS you can install via Homebrew (`brew install podman podman-desktop`) and start the Podman machine with `podman machine init && podman machine start`.
-
-When VSCode prompts for the container runtime, choose Podman.
+Install Docker Engine (Linux) or Docker Desktop (macOS/Windows) and ensure VSCode is configured to use it for Dev Containers. On macOS, install Docker Desktop from <https://www.docker.com/products/docker-desktop/> and start it before opening VSCode.
 
 ### Renv Configuration
 
@@ -101,7 +99,7 @@ Replace the placeholder `github_pat_...` value with your own [GitHub personal ac
 
 ## Utility Scripts
 
-- `scripts/fixperms.sh`: macOS tends to mark new files as user-only, which causes permission conflicts when the Podman container runs as a group-shared user. Run `scripts/fixperms.sh /path/to/project` to recursively switch ownership to the `staff` group (gid 20) and grant group write access. `setup.sh` runs this automatically on macOS, but you can rerun it any time bind-mounted folders become read-only.
+- `scripts/fixperms.sh`: macOS tends to mark new files as user-only, which can cause permission conflicts when the Docker container runs as a group-shared user. Run `scripts/fixperms.sh /path/to/project` to recursively switch ownership to the `staff` group (gid 20) and grant group write access. `setup.sh` runs this automatically on macOS, but you can rerun it any time bind-mounted folders become read-only.
 
 - `scripts/select-devcontainer.sh`: swaps `.devcontainer/devcontainer.json` between the macOS-optimized and Linux-optimized definitions. On macOS it symlinks to `devcontainer_mac.json`; otherwise it points to `devcontainer_linux.json`. `setup.sh` invokes this so VSCode always loads the right configuration, but you can run it manually if you move the repo between hosts.
 
