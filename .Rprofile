@@ -42,7 +42,7 @@ if (os_info == "Linux") {
 
 # Docker-specific settings
 if (Sys.getenv("INSIDE_DOCKER") == "true") {
-  Sys.setenv(RENV_PATHS_CACHE = "/home/rstudio/renv-cache")
+  Sys.setenv(RENV_PATHS_CACHE = "/renv")
 }
 
 # General settings for any container environment
