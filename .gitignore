@@ -87,3 +87,5 @@ rsconnect/
 # manuscript.pdf is not ignored in git becauase this is an example
 # but it's better to ignore for the acutal usage
 # !ms/manuscript.pdf
+
+.env

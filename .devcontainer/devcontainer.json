@@ -13,12 +13,16 @@
 		"INSIDE_CONTAINER": "true",
 		"INSIDE_DOCKER": "true",
     "HOST_UID": "${env:HOST_UID}",
-    "HOST_GID": "${env:HOST_GID}"
+    "HOST_GID": "${env:HOST_GID}",
+		"http_proxy": "${localEnv:HTTP_PROXY}",
+    "https_proxy": "${localEnv:HTTPS_PROXY}",
+    "no_proxy": "${localEnv:NO_PROXY}"
 	},
 
   "runArgs": [
     "--network=host",
-    "--group-add=20"
+    "--group-add=20",
+		"--env-file", ".env"
   ],
 
   "mounts": [
@@ -36,7 +40,7 @@
 				"openai.codex"
 			],
 			"settings": {
-  		  "http.proxy": "http://127.0.0.1:10809",
+				"http.proxy": "http://host.docker.internal:2080",
         "http.proxyStrictSSL": false,
 				"r.rterm.linux": "/opt/venv/bin/radian",
 				"r.rpath.linux": "/usr/local/bin/R",
@@ -49,3 +53,4 @@
 		}
 	}
 }
+
