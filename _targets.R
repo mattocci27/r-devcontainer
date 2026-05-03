@@ -19,7 +19,15 @@ tar_option_set(
   "ggrepel",
   "patchwork",
   "janitor",
-  "loo")
+  "loo"),
+  repository = "aws",
+  repository_meta = "aws", # Just for metadata uploads, not required.
+  resources = tar_resources(
+    aws = tar_resources_aws(
+      bucket = "mattocci-backup-2026",
+      prefix = "r-devcontainer"
+    )
+  )
 )
 
 # keep memory usage down to a minimum
