@@ -11,15 +11,16 @@ source("R/functions.R")
 plan(multicore)
 options(clustermq.scheduler = "multicore")
 
-tar_option_set(packages = c(
+tar_option_set(
+  packages = c(
   "tidyverse",
   "cmdstanr",
   "bayesplot",
   "ggrepel",
   "patchwork",
   "janitor",
-  "loo"
-))
+  "loo")
+)
 
 # keep memory usage down to a minimum
 tar_option_set(
@@ -110,7 +111,8 @@ list(
         width = 3.5
       )
     },
-    format = "file"
+    format = "file",
+    repository = "local"
   ),
   tar_target(
     theta_intervals_plot, {
@@ -122,7 +124,8 @@ list(
         width = 3.5
       )
     },
-    format = "file"
+    format = "file",
+    repository = "local"
   ),
 
   # it's hard to debug quarto using targets at the moment
