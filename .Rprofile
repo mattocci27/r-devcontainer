@@ -60,9 +60,21 @@ if (Sys.getenv("INSIDE_DOCKER") == "true") {
 }
 
 # 5. Path handling for Containerized Environments.
+# 5. Utility packages pre-installed in the container (e.g., httpgd for plot viewing).
 if (Sys.getenv("INSIDE_CONTAINER") == "true") {
-  # Add specific library paths if necessary.
-  .libPaths(new = c(.libPaths(),
-                    "/home/rstudio/vscode-R/renv/library/linux-ubuntu-noble/R-4.5/x86_64-pc-linux-gnu/",
-                    "/home/rstudio/vscode-R/renv/library/linux-ubuntu-noble/R-4.5/aarch64-unknown-linux-gnu/"))
+  arch <- switch(Sys.info()[["machine"]],
+    "x86_64"  = "x86_64-pc-linux-gnu",
+    "aarch64" = "aarch64-unknown-linux-gnu",
+    paste0(Sys.info()[["machine"]], "-unknown-linux-gnu")
+  )
+  r_ver <- paste0("R-", R.version$major, ".", strsplit(R.version$minor, "\\.")[[1]][1])
+  codename <- tryCatch({
+    lines <- readLines("/etc/os-release")
+    line  <- grep("^VERSION_CODENAME=", lines, value = TRUE)
+    gsub('"', "", sub("^VERSION_CODENAME=", "", line[1]))
+  }, error = function(e) "noble")
+
+  lib_path <- file.path("/home/rstudio/vscode-R/renv/library",
+                        paste0("linux-ubuntu-", codename), r_ver, arch)
+  if (dir.exists(lib_path)) .libPaths(new = c(.libPaths(), lib_path))
 }
