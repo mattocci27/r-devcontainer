@@ -1,4 +1,3 @@
-source("renv/activate.R")
 options(renv.config.external.libraries = "/usr/local/lib/R/site-library")
 
 # 1. Global Configuration: Freeze the CRAN snapshot date to ensure reproducibility
@@ -54,28 +53,4 @@ if (os_info == "Linux") {
   set_repos(sprintf("https://p3m.dev/cran/%s", P3M_DATE))
 }
 
-# 4. Environment-specific settings.
-if (Sys.getenv("INSIDE_DOCKER") == "true") {
-  # Ensure the renv cache is isolated within the Docker container.
-  Sys.setenv(RENV_PATHS_CACHE = "/renv")
-}
-
-# 5. Path handling for Containerized Environments.
-# 5. Utility packages pre-installed in the container (e.g., httpgd for plot viewing).
-if (Sys.getenv("INSIDE_CONTAINER") == "true") {
-  arch <- switch(Sys.info()[["machine"]],
-    "x86_64"  = "x86_64-pc-linux-gnu",
-    "aarch64" = "aarch64-unknown-linux-gnu",
-    paste0(Sys.info()[["machine"]], "-unknown-linux-gnu")
-  )
-  r_ver <- paste0("R-", R.version$major, ".", strsplit(R.version$minor, "\\.")[[1]][1])
-  codename <- tryCatch({
-    lines <- readLines("/etc/os-release")
-    line  <- grep("^VERSION_CODENAME=", lines, value = TRUE)
-    gsub('"', "", sub("^VERSION_CODENAME=", "", line[1]))
-  }, error = function(e) "noble")
-
-  lib_path <- file.path("/home/rstudio/vscode-R/renv/library",
-                        paste0("linux-ubuntu-", codename), r_ver, arch)
-  if (dir.exists(lib_path)) .libPaths(new = c(.libPaths(), lib_path))
-}
+source("renv/activate.R")

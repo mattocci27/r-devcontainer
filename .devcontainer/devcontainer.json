@@ -1,6 +1,6 @@
 {
 	"name": "VSCode R",
-	"image": "mattocci/cmdstan-zsh:4.5.2",
+	"image": "mattocci/cmdstan-zsh:4.6.0",
 
   "containerUser": "rstudio",
   "remoteUser": "rstudio",
@@ -40,21 +40,17 @@
 				"mhutchie.git-graph",
 				"donjayamanne.githistory",
 				"rlivings39.fzf-quick-open",
-				"openai.codex"
+				"openai.codex",
+				"anthropic.claude-code"
 			],
 			"settings": {
 				"http.proxy": "http://host.docker.internal:2080",
-        "http.proxyStrictSSL": false,
+				"http.proxyStrictSSL": false,
 				"r.rterm.linux": "/opt/venv/bin/radian",
 				"r.rpath.linux": "/usr/local/bin/R",
-				"r.libPaths": [
-					"${workspaceFolder}/renv/library/linux-ubuntu-noble/R-4.5/x86_64-pc-linux-gnu",
-					"/usr/local/lib/R/site-library"
-				],
 				"r.plot.view": "httpgd",
 				"quarto.path": "/usr/local/bin/quarto"
 			}
 		}
 	}
 }
-
