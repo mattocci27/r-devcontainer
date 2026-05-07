@@ -19,6 +19,7 @@ tar_option_set(
   "ggrepel",
   "patchwork",
   "janitor",
+  "paws.storage",
   "loo"),
   repository = "aws",
   repository_meta = "aws", # Just for metadata uploads, not required.

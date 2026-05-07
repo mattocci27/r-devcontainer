@@ -2785,6 +2785,66 @@
       "Maintainer": "Hadley Wickham <hadley@posit.co>",
       "Repository": "RSPM"
     },
+    "httr2": {
+      "Package": "httr2",
+      "Version": "1.2.2",
+      "Source": "Repository",
+      "Title": "Perform HTTP Requests and Process the Responses",
+      "Authors@R": "c( person(\"Hadley\", \"Wickham\", , \"hadley@posit.co\", role = c(\"aut\", \"cre\")), person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\")), person(\"Maximilian\", \"Girlich\", role = \"ctb\") )",
+      "Description": "Tools for creating and modifying HTTP requests, then performing them and processing the results. 'httr2' is a modern re-imagining of 'httr' that uses a pipe-based interface and solves more of the problems that API wrapping packages face.",
+      "License": "MIT + file LICENSE",
+      "URL": "https://httr2.r-lib.org, https://github.com/r-lib/httr2",
+      "BugReports": "https://github.com/r-lib/httr2/issues",
+      "Depends": [
+        "R (>= 4.1)"
+      ],
+      "Imports": [
+        "cli (>= 3.0.0)",
+        "curl (>= 6.4.0)",
+        "glue",
+        "lifecycle",
+        "magrittr",
+        "openssl",
+        "R6",
+        "rappdirs",
+        "rlang (>= 1.1.0)",
+        "vctrs (>= 0.6.3)",
+        "withr"
+      ],
+      "Suggests": [
+        "askpass",
+        "bench",
+        "clipr",
+        "covr",
+        "docopt",
+        "httpuv",
+        "jose",
+        "jsonlite",
+        "knitr",
+        "later (>= 1.4.0)",
+        "nanonext",
+        "otel (>= 0.2.0)",
+        "otelsdk (>= 0.2.0)",
+        "paws.common (>= 0.8.0)",
+        "promises",
+        "rmarkdown",
+        "testthat (>= 3.1.8)",
+        "tibble",
+        "webfakes (>= 1.4.0)",
+        "xml2"
+      ],
+      "VignetteBuilder": "knitr",
+      "Config/Needs/website": "tidyverse/tidytemplate",
+      "Config/testthat/edition": "3",
+      "Config/testthat/parallel": "true",
+      "Config/testthat/start-first": "resp-stream, req-perform",
+      "Encoding": "UTF-8",
+      "RoxygenNote": "7.3.3",
+      "NeedsCompilation": "no",
+      "Author": "Hadley Wickham [aut, cre], Posit Software, PBC [cph, fnd], Maximilian Girlich [ctb]",
+      "Maintainer": "Hadley Wickham <hadley@posit.co>",
+      "Repository": "https://p3m.dev/cran/__linux__/noble/latest"
+    },
     "ids": {
       "Package": "ids",
       "Version": "1.0.1",
@@ -3874,6 +3934,77 @@
       "NeedsCompilation": "no",
       "Author": "Thomas Lin Pedersen [cre, aut] (ORCID: <https://orcid.org/0000-0002-5147-4711>)",
       "Repository": "https://packagemanager.posit.co/cran/__linux__/noble/latest"
+    },
+    "paws.common": {
+      "Package": "paws.common",
+      "Version": "0.8.9",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "Paws Low-Level Amazon Web Services API",
+      "Authors@R": "c( person(\"David\", \"Kretch\", email = \"david.kretch@gmail.com\", role = \"aut\"), person(\"Adam\", \"Banker\", email = \"adam.banker39@gmail.com\", role = \"aut\"), person(\"Dyfan\", \"Jones\", email = \"dyfan.r.jones@gmail.com\", role = \"cre\"), person(\"Amazon.com, Inc.\", role = \"cph\") )",
+      "Description": "Functions for making low-level API requests to Amazon Web Services <https://aws.amazon.com>. The functions handle building, signing, and sending requests, and receiving responses. They are designed to help build  higher-level interfaces to individual services, such as Simple Storage Service (S3).",
+      "License": "Apache License (>= 2.0)",
+      "Depends": [
+        "R (>= 4.1.0)"
+      ],
+      "URL": "https://github.com/paws-r/paws, https://paws-r.r-universe.dev/paws.common, https://www.paws-r-sdk.com",
+      "BugReports": "https://github.com/paws-r/paws/issues",
+      "Encoding": "UTF-8",
+      "LinkingTo": [
+        "Rcpp"
+      ],
+      "Imports": [
+        "base64enc",
+        "curl",
+        "digest",
+        "httr2 (>= 1.0.4)",
+        "jsonlite",
+        "methods",
+        "utils",
+        "stats",
+        "Rcpp",
+        "xml2"
+      ],
+      "Suggests": [
+        "covr",
+        "crayon",
+        "mockery",
+        "withr",
+        "rstudioapi",
+        "testthat (>= 3.0.0)"
+      ],
+      "SystemRequirements": "pandoc (>= 1.12.3) - http://pandoc.org",
+      "RoxygenNote": "7.3.3",
+      "Collate": "'RcppExports.R' 'util.R' 'cache.R' 'struct.R' 'handlers.R' 'iniutil.R' 'config.R' 'logging.R' 'dateutil.R' 'credential_sso.R' 'credential_sts.R' 'url.R' 'net.R' 'credential_providers.R' 'credentials.R' 'client.R' 'convert.R' 'service.R' 'custom_dynamodb.R' 'custom_rds.R' 'head_bucket.R' 'http_status.R' 'error.R' 'custom_s3.R' 'handlers_core.R' 'handlers_ec2query.R' 'handlers_jsonrpc.R' 'handlers_query.R' 'handlers_rest.R' 'handlers_restjson.R' 'tags.R' 'xmlutil.R' 'handlers_restxml.R' 'handlers_stream.R' 'idempotency.R' 'jsonutil.R' 'mock_bindings.R' 'onLoad.R' 'paginate.R' 'populateutil.R' 'queryutil.R' 'request.R' 'retry.R' 'service_parameter_helper.R' 'signer_bearer.R' 'signer_v4.R' 'signer_s3.R' 'signer_s3v4.R' 'signer_v1.R' 'signer_v2.R' 'time.R'",
+      "Config/testthat/edition": "3",
+      "NeedsCompilation": "yes",
+      "Author": "David Kretch [aut], Adam Banker [aut], Dyfan Jones [cre], Amazon.com, Inc. [cph]",
+      "Maintainer": "Dyfan Jones <dyfan.r.jones@gmail.com>",
+      "Repository": "CRAN"
+    },
+    "paws.storage": {
+      "Package": "paws.storage",
+      "Version": "0.9.0",
+      "Source": "Repository",
+      "Title": "'Amazon Web Services' Storage Services",
+      "Authors@R": "c( person(\"David\", \"Kretch\", , \"david.kretch@gmail.com\", role = \"aut\"), person(\"Adam\", \"Banker\", , \"adam.banker39@gmail.com\", role = \"aut\"), person(\"Dyfan\", \"Jones\", , \"dyfan.r.jones@gmail.com\", role = \"cre\"), person(\"Amazon.com, Inc.\", role = \"cph\") )",
+      "Description": "Interface to 'Amazon Web Services' storage services, including 'Simple Storage Service' ('S3') and more <https://aws.amazon.com/>.",
+      "License": "Apache License (>= 2.0)",
+      "URL": "https://github.com/paws-r/paws, https://paws-r.r-universe.dev/paws.storage",
+      "BugReports": "https://github.com/paws-r/paws/issues",
+      "Imports": [
+        "paws.common (>= 0.8.0)"
+      ],
+      "Suggests": [
+        "testthat"
+      ],
+      "Encoding": "UTF-8",
+      "RoxygenNote": "7.3.2",
+      "Collate": "'backup_service.R' 'backup_interfaces.R' 'backup_operations.R' 'dlm_service.R' 'dlm_interfaces.R' 'dlm_operations.R' 'ebs_service.R' 'ebs_interfaces.R' 'ebs_operations.R' 'efs_service.R' 'efs_interfaces.R' 'efs_operations.R' 'finspacedata_service.R' 'finspacedata_interfaces.R' 'finspacedata_operations.R' 'fsx_service.R' 'fsx_interfaces.R' 'fsx_operations.R' 'glacier_service.R' 'glacier_interfaces.R' 'glacier_operations.R' 'omics_service.R' 'omics_interfaces.R' 'omics_operations.R' 'recyclebin_service.R' 'recyclebin_interfaces.R' 'recyclebin_operations.R' 'reexports_paws.common.R' 's3_service.R' 's3_operations.R' 's3_custom.R' 's3_interfaces.R' 's3control_service.R' 's3control_interfaces.R' 's3control_operations.R' 's3outposts_service.R' 's3outposts_interfaces.R' 's3outposts_operations.R' 's3tables_service.R' 's3tables_interfaces.R' 's3tables_operations.R' 'storagegateway_service.R' 'storagegateway_interfaces.R' 'storagegateway_operations.R'",
+      "NeedsCompilation": "no",
+      "Author": "David Kretch [aut], Adam Banker [aut], Dyfan Jones [cre], Amazon.com, Inc. [cph]",
+      "Maintainer": "Dyfan Jones <dyfan.r.jones@gmail.com>",
+      "Repository": "CRAN"
     },
     "pillar": {
       "Package": "pillar",
