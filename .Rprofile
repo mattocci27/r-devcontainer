@@ -69,3 +69,10 @@ if (interactive() && Sys.getenv("TERM_PROGRAM") == "vscode") {
     }
   }
 }
+
+if (Sys.getenv("INSIDE_CONTAINER") == "true") {
+  cmdstan_path <- Sys.getenv("CMDSTAN_PATH", unset = NA)
+  if (!is.na(cmdstan_path) && requireNamespace("cmdstanr", quietly = TRUE)) {
+    cmdstanr::set_cmdstan_path(cmdstan_path)
+  }
+}

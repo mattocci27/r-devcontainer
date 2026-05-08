@@ -58,7 +58,7 @@ list(
     iter_sampling = 2000,
     adapt_delta = 0.9,
     max_treedepth = 15,
-    seed = 123,
+    seed = 42,
     return_draws = TRUE,
     return_diagnostics = TRUE,
     return_summary = TRUE,
@@ -100,7 +100,7 @@ list(
       iter_sampling = 2000,
       adapt_delta = 0.9,
       max_treedepth = 15,
-      seed = 123),
+      seed = 42),
     pattern = map(simulated_schools_data)
   ),
   # export summary csv
