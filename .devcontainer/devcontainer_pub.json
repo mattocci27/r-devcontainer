@@ -9,7 +9,8 @@
 	"containerEnv": {
     "HOME": "/home/rstudio",
     "VSCODE_AGENT_FOLDER": "/home/rstudio/.vscode-server",
-		"RENV_PATHS_CACHE": "/home/rstudio/.cache/R/renv"
+		"RENV_PATHS_CACHE": "/home/rstudio/.cache/R/renv",
+    "TERM_PROGRAM": "vscode"
 	},
 
 	"mounts": [
@@ -25,7 +26,8 @@
 			"settings": {
 				"r.rterm.linux": "/opt/venv/bin/radian",
 				"r.rpath.linux": "/usr/local/bin/R",
-				"r.plot.view": "httpgd",
+				"r.sessionWatcher": true,
+				"r.plot.useHttpgd": true,
 				"quarto.path": "/usr/local/bin/quarto"
 			}
 		}

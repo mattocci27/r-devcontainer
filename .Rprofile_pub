@@ -54,3 +54,18 @@ if (os_info == "Linux") {
 }
 
 source("renv/activate.R")
+
+if (interactive() && Sys.getenv("TERM_PROGRAM") == "vscode") {
+  vscode_init <- c(
+    Sys.getenv("VSCODE_INIT_R"),
+    file.path("~", ".vscode-R", "init.R")
+  )
+  vscode_init <- path.expand(vscode_init[nzchar(vscode_init)])
+  vscode_init <- vscode_init[file.exists(vscode_init)]
+  if (length(vscode_init)) {
+    source(vscode_init[[1]], chdir = TRUE, local = TRUE)
+    if (!"tools:vscode" %in% search() && exists(".First.sys", envir = globalenv())) {
+      get(".First.sys", envir = globalenv())()
+    }
+  }
+}
