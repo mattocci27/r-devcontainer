@@ -15,6 +15,7 @@ tar_option_set(
   packages = c(
   "tidyverse",
   "cmdstanr",
+  "clustermq",
   "bayesplot",
   "ggrepel",
   "patchwork",

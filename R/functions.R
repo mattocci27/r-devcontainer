@@ -69,7 +69,12 @@ fit_sim_model <- function(data, model_file,
                             parallel_chains = 1,
                             refresh = 0,
                             seed = 123) {
-  model <- cmdstan_model(exe_file = tools::file_path_sans_ext(model_file))
+  exe <- tools::file_path_sans_ext(model_file)
+  model <- if (file.exists(exe)) {
+    cmdstan_model(exe_file = exe)
+  } else {
+    cmdstan_model(model_file)
+  }
   fit <- model$sample(
     data = data,
     seed = seed,
