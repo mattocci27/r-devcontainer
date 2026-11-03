@@ -4,7 +4,9 @@ if (!requireNamespace("renv", quietly = TRUE)) {
   stop("renv must be available before hydrating project packages.")
 }
 
-base_library <- "/usr/local/lib/R/site-library"
+# Optional developer-tool import from the current R installation.
+# Use scripts/restore.R afterwards to enforce renv.lock.
+base_libraries <- .Library.site
 
 packages <- c(
   "remotes",
@@ -19,5 +21,5 @@ packages <- c(
 
 renv::hydrate(
   packages = packages,
-  library = base_library
+  sources = base_libraries
 )

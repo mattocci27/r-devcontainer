@@ -17,13 +17,13 @@ menu() {
         # Prompt for the number of CPUs after selecting option 1 or 2
         read -rp "Enter the number of CPUs to use: " num_cpus
         if [[ "$menu_num" == "1" ]]; then
-            Rscript R/run.R "$num_cpus"
+            Rscript scripts/run.R "$num_cpus"
         elif [[ "$menu_num" == "2" ]]; then
             apptainer exec \
             --bind "$RENV_PATHS_CACHE:$RENV_PATHS_CACHE" \
             --env "RENV_PATHS_CACHE=$RENV_PATHS_CACHE" \
             --env INSIDE_CONTAINER=true \
-            apptainer.sif Rscript R/run.R "$num_cpus"
+            apptainer.sif Rscript scripts/run.R "$num_cpus"
         fi
         ;;
     3)

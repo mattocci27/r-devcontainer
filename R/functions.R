@@ -58,9 +58,9 @@ simulate_schools_data <- function(tau = 5) {
 #' @title Fit the Stan model
 #' @return dataframe of cmdstan customized summary with diagnostics
 #' @param data list, a single simulated dataset.
-#' @param model_file Path to the Stan model source file.
+#' @param model_files Stan source and executable paths from tar_stan_compile().
 #' @references https://github.com/wlandau/targets-stan
-fit_sim_model <- function(data, model_file,
+fit_sim_model <- function(data, model_files,
                             iter_warmup = 1,
                             iter_sampling = 1,
                             adapt_delta = 0.9,
@@ -69,12 +69,11 @@ fit_sim_model <- function(data, model_file,
                             parallel_chains = 1,
                             refresh = 0,
                             seed = 123) {
-  exe <- tools::file_path_sans_ext(model_file)
-  model <- if (file.exists(exe)) {
-    cmdstan_model(exe_file = exe)
-  } else {
-    cmdstan_model(model_file)
-  }
+  model <- cmdstanr::cmdstan_model(
+    stan_file = model_files[[1]],
+    exe_file = model_files[[2]],
+    compile = FALSE
+  )
   fit <- model$sample(
     data = data,
     seed = seed,
@@ -84,9 +83,10 @@ fit_sim_model <- function(data, model_file,
     max_treedepth = max_treedepth,
     chains = chains,
     parallel_chains = parallel_chains,
-    refresh = refresh)
+    refresh = refresh,
+    output_dir = stan_output_dir(targets::tar_name()))
 
-  summary_ <- posterior::summarise_draws(fit,
+  summary_ <- posterior::summarise_draws(fit$draws(),
     mean = ~mean(.x),
     sd = ~sd(.x),
     mad = ~mad(.x),
@@ -101,41 +101,19 @@ fit_sim_model <- function(data, model_file,
     mutate(tau = data$tau)
 }
 
-#' @title Compile a Stan model and return a path to the compiled model output.
-#' @description We return the paths to the Stan model specification
-#'   and the compiled model file so `targets` can treat them as
-#'   dynamic files and compile the model if either file changes.
-#' @return Path to the compiled Stan model, which is just an RDS file.
-#'   To run the model, you can read this file into a new R session with
-#'   `readRDS()` and feed it to the `object` argument of `sampling()`.
-#' @param model_file Path to a Stan model file.
-#'   This is a text file with the model spceification.
-#' @references https://github.com/wlandau/targets-stan
-#' @examples
-#' library(cmdstanr)
-#' compile_model("stan/model.stan")
-compile_model <- function(model_file) {
-  quiet(cmdstan_model(model_file))
-  model_file
+# Keep native macOS and Linux/CPU-specific executables in separate directories.
+stan_build_dir <- function() {
+  path <- file.path("build", "stan", R.version$platform)
+  dir.create(path, recursive = TRUE, showWarnings = FALSE)
+  path
 }
 
-#' @title Suppress output and messages for code.
-#' @description Used in the pipeline.
-#' @return The result of running the code.
-#' @param code Code to run quietly.
-#' @references https://github.com/wlandau/targets-stan
-#' @examples
-#' library(cmdstanr)
-#' library(tidyverse)
-#' compile_model("stan/model.stan")
-#' quiet(fit_model("stan/model.stan", simulate_data_discrete()))
-#' out
-quiet <- function(code) {
-  sink(nullfile())
-  on.exit(sink())
-  suppressMessages(code)
+# Persist CSV output for each target/branch outside CmdStanR's temporary folder.
+stan_output_dir <- function(name) {
+  path <- file.path("outputs", "cmdstan", R.version$platform, name)
+  dir.create(path, recursive = TRUE, showWarnings = FALSE)
+  path
 }
-
 
 theta_tau_line <- function(sim_fit) {
   theta <- sim_fit |>

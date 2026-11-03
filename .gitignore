@@ -1,8 +1,3 @@
-# Compiled Object files without extensions
-*
-!*/
-!*.*
-
 # History files
 .Rhistory
 .Rapp.history
@@ -59,11 +54,9 @@ rsconnect/
 *.sif
 *.pdf
 *.eps
-*.csv
-*.png
 *.docx
 *.pptx
-*.xslx
+*.xlsx
 *.html
 *.fdb_latexmk
 
@@ -71,7 +64,7 @@ rsconnect/
 *_files/
 
 ## Core latex/pdflatex auxiliary files:
-# *.aux
+*.aux
 *.lof
 *.log
 *.lot
@@ -92,3 +85,24 @@ rsconnect/
 
 # targets execution state is generated separately for each project.
 /_targets/
+
+# Private source data: keep only the empty-directory placeholder.
+/data-raw/*
+!/data-raw/.gitkeep
+
+# Generated data, figures, compiled models, and CmdStan output.
+/data/*
+!/data/.gitkeep
+/figs/*
+!/figs/.gitkeep
+/build/*
+!/build/.gitkeep
+/outputs/*
+!/outputs/.gitkeep
+
+# Compiled objects and shared libraries.
+*.o
+*.so
+*.dylib
+*.dll
+*.exe

@@ -45,6 +45,8 @@ list(
     fit,
     "stan/model.stan",
     data = schools_data,
+    dir = stan_build_dir(),
+    output_dir = stan_output_dir("fit"),
     refresh = 0,
     chains = 3,
     parallel_chains = 1,
@@ -75,11 +77,11 @@ list(
     simulate_schools_data(sim_tau),
     pattern = map(sim_tau)
   ),
-  # compile stan model so that targets can track
-  tar_target(
+  # Track both source and executable, including a missing executable.
+  tar_stan_compile(
     simulation_stan,
-    compile_model("stan/simulation.stan"),
-    format = "file"
+    "stan/simulation.stan",
+    dir = stan_build_dir()
   ),
   # fit stan model to each simulated data (dynamic branches)
   tar_target(

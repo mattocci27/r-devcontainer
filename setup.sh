@@ -6,8 +6,11 @@ REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # Ensure Renviron defaults exist
 "$REPO_ROOT/scripts/make_renviron.sh"
 
-# Validate the shared devcontainer definition without replacing it.
-"$REPO_ROOT/scripts/select_devcontainer.sh"
+# Linux and macOS share the same devcontainer definition.
+if [[ ! -f "$REPO_ROOT/.devcontainer/devcontainer.json" ]]; then
+    echo "Missing .devcontainer/devcontainer.json" >&2
+    exit 1
+fi
 
 # The same host cache is used by Docker and Apptainer.
 mkdir -p "$HOME/renv"

@@ -2,14 +2,17 @@
 # an older .Renviron still enables pak.
 options(renv.config.pak.enabled = FALSE)
 
-# Share the host cache for native R and Apptainer; Docker explicitly uses /renv.
-if (!nzchar(Sys.getenv("RENV_PATHS_CACHE"))) {
+# Linux/Apptainer share ~/renv; Docker explicitly uses /renv.
+# Native macOS uses renv's user-owned default cache. The Docker bind cache may
+# belong to a Linux UID and is not necessarily writable by the Mac user.
+if (Sys.info()[["sysname"]] == "Linux" &&
+    !nzchar(Sys.getenv("RENV_PATHS_CACHE"))) {
   Sys.setenv(RENV_PATHS_CACHE = path.expand("~/renv"))
 }
 
 # 1. Global Configuration: Freeze the CRAN snapshot date to ensure reproducibility
 # across different operating systems (Linux vs macOS).
-P3M_DATE <- "2026-05-01"
+P3M_DATE <- "2026-11-01"
 
 # Detect the basic OS name
 os_info <- Sys.info()["sysname"]
@@ -19,7 +22,7 @@ os_info <- Sys.info()["sysname"]
 set_repos <- function(cran_url) {
   repos <- c(
     rOpenSci = "https://ropensci.r-universe.dev",
-    Stan     = "https://mc-stan.org/r-packages/",
+    Stan     = "https://stan-dev.r-universe.dev",
     CRAN     = cran_url
   )
   options(repos = repos)
