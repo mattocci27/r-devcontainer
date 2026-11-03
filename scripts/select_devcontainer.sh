@@ -1,12 +1,12 @@
-# scripts/select-devcontainer.sh
 #!/usr/bin/env bash
-set -e
-cd "$(dirname "$0")/../.devcontainer"
+set -euo pipefail
 
-if [[ "$(uname -s)" == "Darwin" ]]; then
-  ln -sf devcontainer_mac.json devcontainer.json
-  echo "🧠 Selected macOS devcontainer"
-else
-  ln -sf devcontainer_linux.json devcontainer.json
-  echo "🐧 Selected Linux devcontainer"
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+config="$REPO_ROOT/.devcontainer/devcontainer.json"
+
+# Both host operating systems use the same configuration. Never replace it.
+if [[ ! -f "$config" ]]; then
+    echo "Missing devcontainer configuration: $config" >&2
+    exit 1
 fi
+echo "Using the shared Linux/macOS devcontainer configuration."

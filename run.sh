@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail
+
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$REPO_ROOT"
+export RENV_PATHS_CACHE="${RENV_PATHS_CACHE:-$HOME/renv}"
+mkdir -p "$RENV_PATHS_CACHE"
 
 menu() {
     echo "1) tar_make() on local (or inside docker)"
@@ -15,20 +20,23 @@ menu() {
             Rscript R/run.R "$num_cpus"
         elif [[ "$menu_num" == "2" ]]; then
             apptainer exec \
-            --env RENV_PATHS_CACHE=$HOME/renv \
+            --bind "$RENV_PATHS_CACHE:$RENV_PATHS_CACHE" \
+            --env "RENV_PATHS_CACHE=$RENV_PATHS_CACHE" \
             --env INSIDE_CONTAINER=true \
             apptainer.sif Rscript R/run.R "$num_cpus"
         fi
         ;;
     3)
         apptainer shell \
-        --env RENV_PATHS_CACHE=$HOME/renv \
+        --bind "$RENV_PATHS_CACHE:$RENV_PATHS_CACHE" \
+        --env "RENV_PATHS_CACHE=$RENV_PATHS_CACHE" \
         --env INSIDE_CONTAINER=true \
         apptainer.sif bash
         ;;
     4)
         singularity shell \
-        --env RENV_PATHS_CACHE=$HOME/renv \
+        --bind "$RENV_PATHS_CACHE:$RENV_PATHS_CACHE" \
+        --env "RENV_PATHS_CACHE=$RENV_PATHS_CACHE" \
         --env INSIDE_CONTAINER=true \
         apptainer.sif bash
         ;;

@@ -42,9 +42,9 @@ Robust, maintainable, and scalable workflows.
     ./setup.sh
     ```
     The `setup.sh` script automates the configuration of the development environment for the R project.
-    It prepares the Docker-backed VSCode dev container, updates environment settings for renv, links the appropriate devcontainer JSON for your host, fixes macOS permissions when needed, and builds an Apptainer image if applicable. Running it once per machine keeps the environment consistent and reproducible.
+    It adds missing `.Renviron` defaults without overwriting existing values, validates the shared Linux/macOS devcontainer configuration, creates `$HOME/renv`, and builds an Apptainer image if applicable. It does not change ownership or permissions recursively.
 
-3. **Start VSCode Dev Container**: Open the project in Visual Studio Code and start the development container. The dev container definition assumes Docker Engine (Linux) or Docker Desktop (macOS/Windows) is available to the VSCode Dev Containers / Remote Containers extension.
+3. **Start VSCode Dev Container**: Open the project in Visual Studio Code and run **Dev Containers: Rebuild and Reopen in Container**. Both devcontainer definitions use `mattocci/cmdstan-zsh:4.6.1`. The initial creation runs `Rscript scripts/restore.R`, which checks R 4.6.1 and cache write access, then restores packages from `renv.lock`. This first restore may take time. After changing the lockfile, rerun that command inside the container.
 
 4. **Run the Project**:
     ```bash
@@ -62,50 +62,77 @@ Install Docker Engine (Linux) or Docker Desktop (macOS/Windows) and ensure VSCod
 ### Renv Configuration
 
 [`renv`](https://rstudio.github.io/renv/articles/renv.html) is a dependency management tool for R that helps you create reproducible environments for your R projects.
-To use `renv` with this development environment, create a directory at `$HOME/renv` on your host system:
+Both Docker and Apptainer use the host's `$HOME/renv` cache. `setup.sh` creates it; Dev Containers also creates it before starting the container.
 
-```bash
-mkdir -p $HOME/renv
+```text
+Linux/macOS host: $HOME/renv  ->  Docker: /renv
+                                      RENV_PATHS_CACHE=/renv
+Apptainer/Singularity: $HOME/renv (bound at the same absolute path)
 ```
 
-This directory will be used to store `renv` caches, which can be shared across multiple projects to save disk space and reduce the time required to install R packages.
+The Linux host's cache is used when Docker runs on Linux. On macOS the source is the Mac's `$HOME/renv`. Both devcontainer JSON files use this bind mount; the public variant only has fewer editor extensions.
+
+`renv` separates installed packages by OS, R major/minor version, and architecture. R 4.5 packages are not reused as R 4.6 packages. R 4.6.0 and 4.6.1 normally share an R-4.6 cache branch. macOS native packages and Linux container packages also have separate branches.
+
+On Linux, Dev Containers updates the `rstudio` UID/GID to match the host user. Existing cache directories must still be writable by that user, or by one of its groups. If restoring reports a permission error, fix ownership or group permissions for the affected cache directory; setup does not recursively modify an existing shared cache.
+
+For **native R 4.6.1**, restore from the project root:
+
+```bash
+Rscript scripts/restore.R
+```
+
+For **Apptainer**, build with `./setup.sh`, then restore in the container:
+
+```bash
+apptainer exec --bind "$HOME/renv:$HOME/renv" \
+  --env "RENV_PATHS_CACHE=$HOME/renv" --env INSIDE_CONTAINER=true \
+  apptainer.sif Rscript scripts/restore.R
+```
+
+`run.sh` passes the same cache path and bind mount to Apptainer/Singularity. An explicit `RENV_PATHS_CACHE` overrides the default for native R and `run.sh`. Docker uses `/renv` as configured in its JSON.
+
+If `apptainer.sif` already exists from an older template version, rebuild it explicitly with `apptainer build --force apptainer.sif apptainer.def` before restoring. Setup preserves existing images.
+
+The project uses an isolated renv library; packages from the container's site library are not automatically exposed. The example targets pipeline stores results locally. Configure your own AWS bucket and credentials explicitly if you want remote storage.
 
 ### SSH Configuration
 
 If you need to access private Git repositories or other services using SSH keys from within the dev container, you'll need to set up SSH key forwarding.
 This allows the container to use your host's SSH keys without copying them into the container, which is more secure.
 
-Follow the [SSH Setup Instructions](./templates/ssh_setup.md) to configure SSH key forwarding for the development environment.
+Follow the [SSH Setup Instructions](./docs/ssh_setup.md) to configure SSH key forwarding for the development environment.
 
 By following these prerequisites, you'll ensure that the development environment is set up correctly and securely, with proper permissions and access to necessary tools and services.
 
 ### `.Renviron` and `GITHUB_PAT`
 
-The `.Renviron` file at the project root is committed so shared environment defaults are available. It currently defines:
+The project `.Renviron` is git-ignored. `scripts/make_renviron.sh` adds these defaults only when each key is missing, preserving existing values and secrets even when setup is rerun from another directory:
 
 ```bash
-#renv settings
 RENV_PATHS_PREFIX_AUTO=TRUE
-RENV_CONFIG_PAK_ENABLED=TRUE
+RENV_CONFIG_PAK_ENABLED=FALSE
 OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
-GITHUB_PAT=github_pat_XXXXXXXXXXXXXXXXXXXXXXXX
 ```
 
-- `RENV_PATHS_PREFIX_AUTO=TRUE` keeps per-project libraries inside the repo even when a shared cache is mounted, which prevents cross-project contamination.  
-- `RENV_CONFIG_PAK_ENABLED=TRUE` tells `renv` to use `pak` for faster installs and downloads.  
-- `OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES` avoids macOS fork protections that can break GUI-linked R packages launched from VS Code.
+- `RENV_PATHS_PREFIX_AUTO=TRUE` separates library and cache paths by OS/distribution.
+- `RENV_CONFIG_PAK_ENABLED=FALSE` uses renv's standard installer and installed-package cache. `.Rprofile` also disables pak to cover existing `.Renviron` files that still set it to `TRUE`; the existing file is preserved.
+- `OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES` is a workaround for macOS fork protection with GUI-linked R packages.
 
-Replace the placeholder `github_pat_...` value with your own [GitHub personal access token](https://github.com/settings/tokens) that has at least `read:packages` scope. Packages such as `pak` use this token to authenticate against GitHub's API and to stay within higher rate limits. Keep the token scoped narrowly and rotate it if it leaks.
+A GitHub token is optional for public packages. If you need one for private repositories or API rate limits, add `GITHUB_PAT` to your ignored `.Renviron` with permissions appropriate to those repositories.
+
+No private dotfiles or secrets files are required. The template does not install personal dotfiles or set a fixed editor proxy. Configure those separately if needed. Proxy environment variables can be supplied by the host.
 
 ## Utility Scripts
 
-- `scripts/fixperms.sh`: macOS tends to mark new files as user-only, which can cause permission conflicts when the Docker container runs as a group-shared user. Run `scripts/fixperms.sh /path/to/project` to recursively switch ownership to the `staff` group (gid 20) and grant group write access. `setup.sh` runs this automatically on macOS, but you can rerun it any time bind-mounted folders become read-only.
-
-- `scripts/select-devcontainer.sh`: swaps `.devcontainer/devcontainer.json` between the macOS-optimized and Linux-optimized definitions. On macOS it symlinks to `devcontainer_mac.json`; otherwise it points to `devcontainer_linux.json`. `setup.sh` invokes this so VSCode always loads the right configuration, but you can run it manually if you move the repo between hosts.
+- `scripts/restore.R`: verifies R 4.6.1 and cache write access, then restores the lockfile. Run from the project root in the intended R environment.
+- `scripts/make_renviron.sh`: appends missing defaults without overwriting existing settings.
+- `scripts/select_devcontainer.sh`: compatibility entry point that validates the common configuration; it no longer creates OS-specific symlinks.
+- `scripts/fixperms.sh`: optional legacy macOS permission helper. It recursively changes project permissions and is no longer called automatically.
 
 ## Project Structure
 
-- `./_targets`: Metadata for the `targets` package.
+- `./_targets`: Generated, git-ignored execution state for `targets`. Old template metadata is not carried into new projects.
 - `./_targets.R`: Target pipeline definition.
 - `./_targets_packages.R`: Required packages for the pipeline.
 - `./apptainer.def`: Apptainer container definition file.

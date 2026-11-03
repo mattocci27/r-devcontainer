@@ -22,14 +22,7 @@ tar_option_set(
   "janitor",
   "paws.storage",
   "loo"),
-  repository = "aws",
-  repository_meta = "aws", # Just for metadata uploads, not required.
-  resources = tar_resources(
-    aws = tar_resources_aws(
-      bucket = "mattocci-backup-2026",
-      prefix = "r-devcontainer"
-    )
-  )
+  repository = "local"
 )
 
 # keep memory usage down to a minimum

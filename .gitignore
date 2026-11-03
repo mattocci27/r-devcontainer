@@ -89,3 +89,6 @@ rsconnect/
 # !ms/manuscript.pdf
 
 .env
+
+# targets execution state is generated separately for each project.
+/_targets/

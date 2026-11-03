@@ -1,4 +1,11 @@
-options(renv.config.external.libraries = "/usr/local/lib/R/site-library")
+# Use renv's installer and its shared installed-package cache, including when
+# an older .Renviron still enables pak.
+options(renv.config.pak.enabled = FALSE)
+
+# Share the host cache for native R and Apptainer; Docker explicitly uses /renv.
+if (!nzchar(Sys.getenv("RENV_PATHS_CACHE"))) {
+  Sys.setenv(RENV_PATHS_CACHE = path.expand("~/renv"))
+}
 
 # 1. Global Configuration: Freeze the CRAN snapshot date to ensure reproducibility
 # across different operating systems (Linux vs macOS).
